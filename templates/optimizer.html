@@ -1,0 +1,119 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transportation Optimizer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<nav class="navbar">
+    <a class="brand" href="/">TRANSPORT<span>OPTIMIZER</span></a>
+    <div class="nav-links">
+        <a href="/">Dashboard</a>
+        <a class="active" href="/optimizer">Optimizer</a>
+        <a href="/vehicles">Vehicles</a>
+        <a href="/routes">Routes</a>
+        <a href="/reports">Reports</a>
+        <a href="/history">History</a>
+    </div>
+</nav>
+
+<main class="container">
+    <section class="page-heading">
+        <h1>Transportation Cost Optimizer</h1>
+        <p>Find the minimum transportation cost using Linear Programming.</p>
+    </section>
+
+    {% if error %}
+    <div class="alert alert-error">{{ error }}</div>
+    {% endif %}
+
+    <section class="card">
+        <h2>Enter Optimization Data</h2>
+        <p class="muted">
+            Enter the transportation cost matrix, supply and demand.
+            Separate matrix values with commas and use one row per line.
+        </p>
+        <br>
+
+        <form method="POST" action="/optimizer">
+            <label for="costs">Transportation Cost Matrix</label>
+            <textarea id="costs" name="costs" required>8,6,10
+9,7,4</textarea>
+
+            <div class="form-grid">
+                <div>
+                    <label for="supply">Supply (comma separated)</label>
+                    <input id="supply" type="text" name="supply"
+                           value="40,60" required>
+                </div>
+                <div>
+                    <label for="demand">Demand (comma separated)</label>
+                    <input id="demand" type="text" name="demand"
+                           value="30,50,20" required>
+                </div>
+            </div>
+
+            <button type="submit">Calculate Minimum Cost</button>
+        </form>
+    </section>
+
+    {% if result %}
+    <section class="card">
+        <h2>Optimization Result</h2>
+
+        <div class="result-highlight">
+            <p class="muted">Minimum Transportation Cost</p>
+            <strong>{{ result.minimum_cost }}</strong>
+            <p class="muted">Optimization ID: {{ result.optimization_id }}</p>
+        </div>
+
+        <div class="grid-2">
+            <div>
+                <p class="muted">Original Supply: {{ result.original_supply }}</p>
+                <p class="muted">Balanced Supply: {{ result.balanced_supply }}</p>
+            </div>
+            <div>
+                <p class="muted">Original Demand: {{ result.original_demand }}</p>
+                <p class="muted">Balanced Demand: {{ result.balanced_demand }}</p>
+            </div>
+        </div>
+
+        <h3>Allocation Details</h3>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Source</th>
+                        <th>Destination</th>
+                        <th>Allocated Quantity</th>
+                        <th>Unit Cost</th>
+                        <th>Total Cost</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in result.allocations %}
+                    <tr>
+                        <td>{{ item.source }}</td>
+                        <td>{{ item.destination }}</td>
+                        <td>{{ item.allocated_quantity }}</td>
+                        <td>{{ item.unit_cost }}</td>
+                        <td>{{ item.total_cost }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+    {% endif %}
+</main>
+
+<footer class="footer">
+    Intelligent Transportation Cost Optimizer
+</footer>
+
+</body>
+</html>

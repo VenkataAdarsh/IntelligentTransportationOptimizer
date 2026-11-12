@@ -1,0 +1,99 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Optimization History</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<nav class="navbar">
+    <a class="brand" href="/">TRANSPORT<span>OPTIMIZER</span></a>
+    <div class="nav-links">
+        <a href="/">Dashboard</a>
+        <a href="/optimizer">Optimizer</a>
+        <a href="/vehicles">Vehicles</a>
+        <a href="/routes">Routes</a>
+        <a href="/reports">Reports</a>
+        <a class="active" href="/history">History</a>
+    </div>
+</nav>
+
+<main class="container">
+    <section class="page-heading">
+        <h1>Optimization History</h1>
+        <p>Review previous transportation optimization calculations and allocations.</p>
+    </section>
+
+    {% if error %}
+    <div class="alert alert-error">{{ error }}</div>
+    {% endif %}
+
+    {% for item in history %}
+    <section class="card">
+        <div class="actions" style="justify-content:space-between; align-items:center;">
+            <h2>Optimization #{{ item.optimization_id }}</h2>
+            <span class="badge">{{ item.created_at }}</span>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <p>Total Cost</p>
+                <h2>{{ item.total_cost }}</h2>
+            </div>
+            <div class="stat-card">
+                <p>Total Quantity</p>
+                <h2>{{ item.total_quantity }}</h2>
+            </div>
+        </div>
+
+        <h3>Allocation Details</h3>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Source</th>
+                        <th>Destination</th>
+                        <th>Allocated Quantity</th>
+                        <th>Unit Cost</th>
+                        <th>Total Cost</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for allocation in item.allocations %}
+                    <tr>
+                        <td>{{ allocation.source }}</td>
+                        <td>{{ allocation.destination }}</td>
+                        <td>{{ allocation.allocated_quantity }}</td>
+                        <td>{{ allocation.unit_cost }}</td>
+                        <td>{{ allocation.total_cost }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="empty-state">
+                            No allocation details available.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+    {% else %}
+        {% if not error %}
+        <section class="card empty-state">
+            <h2>No Optimization History</h2>
+            <p>Run your first optimization to see the saved results here.</p>
+            <br>
+            <a class="btn" href="/optimizer">Start Optimization</a>
+        </section>
+        {% endif %}
+    {% endfor %}
+</main>
+
+<footer class="footer">Intelligent Transportation Cost Optimizer</footer>
+
+</body>
+</html>

@@ -1,0 +1,155 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<nav class="navbar">
+    <a class="brand" href="/">TRANSPORT<span>OPTIMIZER</span></a>
+    <div class="nav-links">
+        <a href="/">Dashboard</a>
+        <a href="/optimizer">Optimizer</a>
+        <a class="active" href="/vehicles">Vehicles</a>
+        <a href="/routes">Routes</a>
+        <a href="/reports">Reports</a>
+        <a href="/history">History</a>
+    </div>
+</nav>
+
+<main class="container">
+    <section class="page-heading">
+        <h1>Vehicle Management</h1>
+        <p>Add, view, update and delete transportation vehicles.</p>
+    </section>
+
+    {% if error %}
+    <div class="alert alert-error">{{ error }}</div>
+    {% endif %}
+
+    <section class="card">
+        <h2>Add New Vehicle</h2>
+        <form method="POST" action="/add_vehicle">
+            <div class="form-grid">
+                <div>
+                    <label>Vehicle Name</label>
+                    <input type="text" name="vehicle_name" placeholder="Example: Truck 04" required>
+                </div>
+                <div>
+                    <label>Vehicle Type</label>
+                    <input type="text" name="vehicle_type" placeholder="Heavy Truck" required>
+                </div>
+                <div>
+                    <label>Capacity</label>
+                    <input type="number" name="capacity" min="1" required>
+                </div>
+                <div>
+                    <label>Fuel Cost</label>
+                    <input type="number" name="fuel_cost" min="0" step="0.01" required>
+                </div>
+            </div>
+            <button type="submit">Add Vehicle</button>
+        </form>
+    </section>
+
+    <section class="card">
+        <h2>Vehicle List</h2>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Vehicle Name</th>
+                        <th>Vehicle Type</th>
+                        <th>Capacity</th>
+                        <th>Fuel Cost</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for vehicle in vehicles %}
+                    <tr>
+                        <td>{{ vehicle.vehicle_id }}</td>
+                        <td>{{ vehicle.vehicle_name }}</td>
+                        <td>{{ vehicle.vehicle_type }}</td>
+                        <td>{{ vehicle.capacity }}</td>
+                        <td>{{ vehicle.fuel_cost }}</td>
+                        <td><span class="badge">{{ vehicle.status }}</span></td>
+                        <td>
+                            <div class="actions">
+                                <button type="button" class="btn-secondary"
+                                    onclick="showEditForm({{ vehicle.vehicle_id }})">
+                                    Edit
+                                </button>
+                                <form method="POST"
+                                      action="/delete_vehicle/{{ vehicle.vehicle_id }}"
+                                      onsubmit="return confirm('Delete this vehicle?');">
+                                    <button type="submit" class="btn-danger">Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr id="edit-{{ vehicle.vehicle_id }}" style="display:none;">
+                        <td colspan="7">
+                            <form method="POST"
+                                  action="/edit_vehicle/{{ vehicle.vehicle_id }}">
+                                <div class="form-grid">
+                                    <div>
+                                        <label>Vehicle Name</label>
+                                        <input name="vehicle_name"
+                                               value="{{ vehicle.vehicle_name }}" required>
+                                    </div>
+                                    <div>
+                                        <label>Vehicle Type</label>
+                                        <input name="vehicle_type"
+                                               value="{{ vehicle.vehicle_type }}" required>
+                                    </div>
+                                    <div>
+                                        <label>Capacity</label>
+                                        <input type="number" name="capacity"
+                                               value="{{ vehicle.capacity }}" min="1" required>
+                                    </div>
+                                    <div>
+                                        <label>Fuel Cost</label>
+                                        <input type="number" name="fuel_cost"
+                                               value="{{ vehicle.fuel_cost }}" min="0"
+                                               step="0.01" required>
+                                    </div>
+                                </div>
+                                <button type="submit">Save Changes</button>
+                                <button type="button" class="btn-secondary"
+                                    onclick="hideEditForm({{ vehicle.vehicle_id }})">
+                                    Cancel
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="empty-state">No vehicles found. Add your first vehicle above.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+
+<footer class="footer">Intelligent Transportation Cost Optimizer</footer>
+
+<script>
+function showEditForm(id) {
+    document.getElementById("edit-" + id).style.display = "table-row";
+}
+function hideEditForm(id) {
+    document.getElementById("edit-" + id).style.display = "none";
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,85 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transportation Optimizer | Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<nav class="navbar">
+    <a class="brand" href="/">TRANSPORT<span>OPTIMIZER</span></a>
+    <div class="nav-links">
+        <a class="active" href="/">Dashboard</a>
+        <a href="/optimizer">Optimizer</a>
+        <a href="/vehicles">Vehicles</a>
+        <a href="/routes">Routes</a>
+        <a href="/reports">Reports</a>
+        <a href="/history">History</a>
+    </div>
+</nav>
+
+<main class="container">
+    <section class="page-heading">
+        <h1>Transportation Dashboard</h1>
+        <p>Monitor your transportation resources and optimize delivery costs.</p>
+    </section>
+
+    <section class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">🚚</div>
+            <p>Total Vehicles</p>
+            <h2>{{ total_vehicles }}</h2>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🛣️</div>
+            <p>Total Routes</p>
+            <h2>{{ total_routes }}</h2>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">📊</div>
+            <p>Optimization</p>
+            <h2><a href="/history">View History</a></h2>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">⚙️</div>
+            <p>Optimization Engine</p>
+            <h2>Ready</h2>
+        </div>
+    </section>
+
+    <section class="grid-2">
+        <div class="card">
+            <h2>Transportation Cost Optimizer</h2>
+            <p class="muted">
+                Calculate an efficient allocation of transportation resources
+                using Linear Programming.
+            </p>
+            <br>
+            <a class="btn" href="/optimizer">Start Optimization</a>
+        </div>
+
+        <div class="card">
+            <h2>Manage Transportation</h2>
+            <p class="muted">
+                Maintain vehicle details, manage delivery routes and review
+                previous optimization results.
+            </p>
+            <br>
+            <div class="actions">
+                <a class="btn btn-secondary" href="/vehicles">Vehicles</a>
+                <a class="btn btn-secondary" href="/routes">Routes</a>
+                <a class="btn btn-secondary" href="/reports">Reports</a>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="footer">
+    Intelligent Transportation Cost Optimizer | Academic Project
+</footer>
+
+</body>
+</html>

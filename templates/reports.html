@@ -1,0 +1,167 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<nav class="navbar">
+    <a class="brand" href="/">TRANSPORT<span>OPTIMIZER</span></a>
+    <div class="nav-links">
+        <a href="/">Dashboard</a>
+        <a href="/optimizer">Optimizer</a>
+        <a href="/vehicles">Vehicles</a>
+        <a href="/routes">Routes</a>
+        <a class="active" href="/reports">Reports</a>
+        <a href="/history">History</a>
+    </div>
+</nav>
+
+<main class="container">
+    <section class="page-heading">
+        <h1>Reports & Analytics</h1>
+        <p>View transportation statistics and optimization performance.</p>
+    </section>
+
+    <section class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">🚚</div>
+            <p>Total Vehicles</p>
+            <h2>{{ total_vehicles }}</h2>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🛣️</div>
+            <p>Total Routes</p>
+            <h2>{{ total_routes }}</h2>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">📈</div>
+            <p>Total Optimizations</p>
+            <h2>{{ total_optimizations }}</h2>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">💰</div>
+            <p>Total Transportation Cost</p>
+            <h2>{{ total_cost }}</h2>
+        </div>
+    </section>
+
+    <section class="card">
+        <p class="muted">Average Optimization Cost</p>
+        <h2>{{ average_cost }}</h2>
+    </section>
+
+    <section class="grid-2">
+        <div class="card">
+            <h2>Cost Analysis</h2>
+            <canvas id="costChart"></canvas>
+        </div>
+        <div class="card">
+            <h2>Quantity Analysis</h2>
+            <canvas id="quantityChart"></canvas>
+        </div>
+    </section>
+
+    <section class="card">
+        <div class="actions" style="justify-content:space-between; align-items:center;">
+            <h2>Recent Optimization Records</h2>
+            <a class="btn btn-secondary" href="/history">View Full History</a>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Optimization ID</th>
+                        <th>Total Cost</th>
+                        <th>Total Quantity</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in recent_history %}
+                    <tr>
+                        <td>{{ item.optimization_id }}</td>
+                        <td>{{ item.total_cost }}</td>
+                        <td>{{ item.total_quantity }}</td>
+                        <td>{{ item.created_at }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="empty-state">
+                            No optimization records available yet.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+
+<footer class="footer">Intelligent Transportation Cost Optimizer</footer>
+
+<script>
+const chartLabels = {{ chart_labels | tojson }};
+const chartCosts = {{ chart_costs | tojson }};
+const chartQuantities = {{ chart_quantities | tojson }};
+
+Chart.defaults.color = '#bdcbe0';
+Chart.defaults.font.family = 'Inter, Arial, sans-serif';
+
+new Chart(document.getElementById('costChart'), {
+    type: 'bar',
+    data: {
+        labels: chartLabels,
+        datasets: [{
+            label: 'Transportation Cost',
+            data: chartCosts,
+            backgroundColor: '#3984f7',
+            borderRadius: 6
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { display: true }
+        },
+        scales: {
+            y: { beginAtZero: true, grid: { color: '#263b56' } },
+            x: { grid: { display: false } }
+        }
+    }
+});
+
+new Chart(document.getElementById('quantityChart'), {
+    type: 'line',
+    data: {
+        labels: chartLabels,
+        datasets: [{
+            label: 'Allocated Quantity',
+            data: chartQuantities,
+            borderColor: '#38c5e8',
+            backgroundColor: 'rgba(56,197,232,0.15)',
+            fill: true,
+            tension: 0.35
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { display: true }
+        },
+        scales: {
+            y: { beginAtZero: true, grid: { color: '#263b56' } },
+            x: { grid: { display: false } }
+        }
+    }
+});
+</script>
+
+</body>
+</html>

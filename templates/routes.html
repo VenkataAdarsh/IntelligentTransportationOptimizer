@@ -1,0 +1,166 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Route Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<nav class="navbar">
+    <a class="brand" href="/">TRANSPORT<span>OPTIMIZER</span></a>
+    <div class="nav-links">
+        <a href="/">Dashboard</a>
+        <a href="/optimizer">Optimizer</a>
+        <a href="/vehicles">Vehicles</a>
+        <a class="active" href="/routes">Routes</a>
+        <a href="/reports">Reports</a>
+        <a href="/history">History</a>
+    </div>
+</nav>
+
+<main class="container">
+    <section class="page-heading">
+        <h1>Route Management</h1>
+        <p>Manage delivery locations, distances, toll charges and fuel costs.</p>
+    </section>
+
+    {% if error %}
+    <div class="alert alert-error">{{ error }}</div>
+    {% endif %}
+
+    <section class="card">
+        <h2>Add New Route</h2>
+        <form method="POST" action="/add_route">
+            <div class="form-grid">
+                <div>
+                    <label>Source</label>
+                    <input type="text" name="source" placeholder="Bengaluru" required>
+                </div>
+                <div>
+                    <label>Destination</label>
+                    <input type="text" name="destination" placeholder="Mysuru" required>
+                </div>
+                <div>
+                    <label>Distance (KM)</label>
+                    <input type="number" name="distance" min="0" step="0.01" required>
+                </div>
+                <div>
+                    <label>Toll Cost</label>
+                    <input type="number" name="toll_cost" min="0" step="0.01" required>
+                </div>
+                <div>
+                    <label>Fuel Cost</label>
+                    <input type="number" name="fuel_cost" min="0" step="0.01" required>
+                </div>
+            </div>
+            <button type="submit">Add Route</button>
+        </form>
+    </section>
+
+    <section class="card">
+        <h2>Available Routes</h2>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Source</th>
+                        <th>Destination</th>
+                        <th>Distance (KM)</th>
+                        <th>Toll Cost</th>
+                        <th>Fuel Cost</th>
+                        <th>Total Cost</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for route in routes %}
+                    <tr>
+                        <td>{{ route.route_id }}</td>
+                        <td>{{ route.source }}</td>
+                        <td>{{ route.destination }}</td>
+                        <td>{{ route.distance }}</td>
+                        <td>{{ route.toll_cost }}</td>
+                        <td>{{ route.fuel_cost }}</td>
+                        <td>{{ (route.toll_cost | float) + (route.fuel_cost | float) }}</td>
+                        <td>
+                            <div class="actions">
+                                <button type="button" class="btn-secondary"
+                                    onclick="showRouteEdit({{ route.route_id }})">
+                                    Edit
+                                </button>
+                                <form method="POST"
+                                      action="/delete_route/{{ route.route_id }}"
+                                      onsubmit="return confirm('Delete this route?');">
+                                    <button type="submit" class="btn-danger">Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr id="route-edit-{{ route.route_id }}" style="display:none;">
+                        <td colspan="8">
+                            <form method="POST"
+                                  action="/edit_route/{{ route.route_id }}">
+                                <div class="form-grid">
+                                    <div>
+                                        <label>Source</label>
+                                        <input name="source" value="{{ route.source }}" required>
+                                    </div>
+                                    <div>
+                                        <label>Destination</label>
+                                        <input name="destination" value="{{ route.destination }}" required>
+                                    </div>
+                                    <div>
+                                        <label>Distance</label>
+                                        <input type="number" name="distance"
+                                               value="{{ route.distance }}" min="0"
+                                               step="0.01" required>
+                                    </div>
+                                    <div>
+                                        <label>Toll Cost</label>
+                                        <input type="number" name="toll_cost"
+                                               value="{{ route.toll_cost }}" min="0"
+                                               step="0.01" required>
+                                    </div>
+                                    <div>
+                                        <label>Fuel Cost</label>
+                                        <input type="number" name="fuel_cost"
+                                               value="{{ route.fuel_cost }}" min="0"
+                                               step="0.01" required>
+                                    </div>
+                                </div>
+                                <button type="submit">Save Changes</button>
+                                <button type="button" class="btn-secondary"
+                                    onclick="hideRouteEdit({{ route.route_id }})">
+                                    Cancel
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="empty-state">No routes found. Add your first route above.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+
+<footer class="footer">Intelligent Transportation Cost Optimizer</footer>
+
+<script>
+function showRouteEdit(id) {
+    document.getElementById("route-edit-" + id).style.display = "table-row";
+}
+function hideRouteEdit(id) {
+    document.getElementById("route-edit-" + id).style.display = "none";
+}
+</script>
+
+</body>
+</html>
